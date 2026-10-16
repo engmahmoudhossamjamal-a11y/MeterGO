@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#282828">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="MeterGO — حساب أجرة التاكسي والتوك توك بالإسكندرية عن طريق GPS">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" href="assets/icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+  <title>MeterGO | عداد الأجرة</title>
+</head>
+<body>
+<div id="app" class="app">
+  <div class="app-top" id="appTop">
+    <div class="top-actions" id="topActions">
+      <button class="icon-button" id="settingsButton" title="الإعدادات" aria-label="الإعدادات">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.1 2.3h3.8l.6 2.3 1.7.8 2-.9 2.7 2.7-.9 2 .8 1.7 2.3.6v3.8l-2.3.6-.8 1.7.9 2-2.7 2.7-2-.9-1.7.8-.6 2.3h-3.8l-.6-2.3-1.7-.8-2 .9-2.7-2.7.9-2-.8-1.7-2.3-.6v-3.8l2.3-.6.8-1.7-.9-2 2.7-2.7 2 .9 1.7-.8.6-2.3z"/><circle cx="12" cy="12" r="3.3"/></svg>
+      </button>
+      <button class="icon-button" id="historyButton" title="سجل الرحلات" aria-label="سجل الرحلات">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11a9 9 0 1 1 2.7 6.5M3 4v7h7M12 6.6V12l3.7 2.3"/></svg>
+      </button>
+    </div>
+    <button class="header-back hidden" id="backButton" aria-label="رجوع">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 4l-8 8 8 8"/></svg><span>رجوع</span>
+    </button>
+    <div class="hero-wrap">
+      <div class="brand" id="brand" aria-label="MeterGO">
+        <svg class="brand-clock" viewBox="0 0 185 150" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <g fill="none" stroke="#f5f5f5" stroke-linecap="round">
+            <path d="M66 22h57" stroke-width="6" opacity="0"/>
+            <path d="M81 10h26" stroke-width="7"/>
+            <path d="M94 10v12" stroke-width="6"/>
+            <path d="M130 41A62 62 0 1 0 108 143" stroke-width="8"/>
+            <path d="M39 18H70 M34 32H58 M19 45H52 M28 61H43 M9 77H43 M26 94H44 M7 109H45 M20 125H53 M35 141H88" stroke-width="2.7"/>
+            <path d="M104 87l36-39" stroke-width="6"/>
+            <circle cx="104" cy="87" r="8" fill="#f5f5f5" stroke="none"/>
+            <circle cx="104" cy="87" r="3.3" fill="#303030" stroke="none"/>
+          </g>
+          <g stroke="#f5f5f5" stroke-width="2.5" stroke-linecap="round">
+            <path d="M94 29v7 M59 43l5 5 M43 78h7 M60 113l5-5 M94 130v-7 M128 113l-4-5 M125 45l-4 5"/>
+          </g>
+        </svg>
+        <span class="brand-words" dir="ltr">MeterGO</span>
+      </div>
+      <img id="vehicleHero" class="vehicle-hero hidden" src="assets/taxi.webp" alt="صورة المركبة المختارة" draggable="false">
+    </div>
+    <div class="header-status" id="headerStatus"><span id="headerStatusText">جارٍ تحديد موقعك...</span><span id="locationIcon" class="pin-inline">◉</span></div>
+    <div class="gold-line"></div>
+  </div>
+
+  <main id="sheet" class="sheet">
+    <div class="location-strip" id="locationStrip">
+      <div class="location-details">
+        <div id="areaName">جارٍ تحديد الموقع...</div>
+        <small id="coordsText" aria-live="polite">اسمح بالوصول للموقع لتشغيل العداد</small>
+      </div>
+      <button id="refreshLocation" class="gps-refresh" title="تحديث GPS" aria-label="تحديث GPS">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.2-5.5M20 4v5h-5"/></svg>
+      </button>
+    </div>
+
+    <section id="homeScreen" class="screen home-screen">
+      <div class="vehicle-picker" role="group" aria-label="اختيار وسيلة المواصلات">
+        <button type="button" class="vehicle-tile" data-vehicle="taxi" aria-pressed="false">
+          <img src="assets/taxi-card.webp" alt="تاكسي أصفر" draggable="false">
+          <span class="vehicle-name">تاكسي</span>
+          <span class="vehicle-rate"><strong id="homeTaxiRate">٥٫٥</strong> جنيه/كم</span>
+        </button>
+        <button type="button" class="vehicle-tile" data-vehicle="tuktuk" aria-pressed="false">
+          <img src="assets/tuktuk-card.webp" alt="توك توك أصفر" draggable="false">
+          <span class="vehicle-name">توك توك</span>
+          <span class="vehicle-rate"><strong id="homeTuktukRate">٥</strong> جنيه/كم</span>
+        </button>
+      </div>
+      <div class="home-action bottom-action">
+        <div id="homeNotice" class="notice error-text" role="status">برجاء تحديد وسيلة المواصلات</div>
+        <button type="button" id="startTrip" class="big-button dark-button">ابدأ الرحلة</button>
+      </div>
+    </section>
+
+    <section id="tripScreen" class="screen trip-screen hidden">
+      <div class="meter-block">
+        <div class="metric small-metric minutes-metric">
+          <div class="metric-title">دقيقة</div>
+          <div id="minutesDisplay" class="digital-black"></div>
+        </div>
+        <div class="metric price-metric">
+          <div class="metric-title">الثمن</div>
+          <div class="price-display"><div id="priceDisplay" class="digital-gold"></div><span class="currency">ج.م</span></div>
+        </div>
+        <div class="metric small-metric kilometers-metric">
+          <div class="metric-title">كم</div>
+          <div id="kmDisplay" class="digital-black"></div>
+        </div>
+      </div>
+      <div class="trip-action bottom-action">
+        <div class="tracking-info" id="trackingInfo" aria-live="polite">جارٍ استقبال إحداثيات GPS...</div>
+        <div class="fare-strip">
+          <div>تكلفة البدء : <strong id="tripBase">16.25</strong> ج</div>
+          <span class="strip-separator"></span>
+          <div>سعر كم : <strong id="tripPerKm">5.50</strong> ج</div>
+        </div>
+        <button type="button" id="endTrip" class="big-button dark-button">إنهاء الرحلة</button>
+      </div>
+    </section>
+
+    <section id="summaryScreen" class="screen summary-screen hidden">
+      <div class="summary-table">
+        <div class="summary-row total-row"><span class="summary-label">إجمالي تكلفة الرحلة</span><div class="summary-value gold-number"><span id="summaryTotal">0.00</span><span>ج.م</span></div></div>
+        <div class="summary-row"><span class="summary-label">فتح عداد</span><div class="summary-value"><span id="summaryBase">0.00</span><span>ج.م</span></div></div>
+        <div class="summary-row"><span class="summary-label">سعر الكم</span><div class="summary-value"><span id="summaryPerKm">0.00</span><span>ج.م</span></div></div>
+        <div class="summary-row"><span class="summary-label">إجمالي المسافة</span><div class="summary-value"><span id="summaryKm">0.00</span><span>كم</span></div></div>
+        <div class="summary-row"><span class="summary-label">زمن الرحلة</span><div class="summary-value"><span id="summaryTime">0</span><span>دقيقة</span></div></div>
+      </div>
+      <div class="summary-action bottom-action">
+        <div class="rating-row">
+          <label class="rating-choice" id="fairChoice"><span>نفس السعر</span><button type="button" id="fairButton" class="fair-button selected" aria-pressed="true">رحلة عادلة</button></label>
+          <label class="rating-choice" id="differentChoice"><span>سعر مختلف</span><input id="paidAmount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="دفعت كام؟" aria-label="المبلغ الذي دفعته بالفعل"></label>
+        </div>
+        <button type="button" id="submitRating" class="big-button dark-button">إنهاء التقييم</button>
+      </div>
+    </section>
+
+    <section id="settingsScreen" class="screen extra-screen hidden">
+      <div class="extra-heading"><h1>الإعدادات</h1><p>تعديل تعريفة الإسكندرية</p></div>
+      <div class="settings-content scroll-content">
+        <div class="setting-group"><h2>🚕 التاكسي</h2><div class="setting-fields">
+          <label>فتح العداد (جنيه)<input id="taxiBaseInput" type="number" min="0" step="0.01" inputmode="decimal"></label>
+          <label>سعر الكيلومتر (جنيه)<input id="taxiPerInput" type="number" min="0" step="0.01" inputmode="decimal"></label>
+        </div></div>
+        <div class="setting-group"><h2>🛺 التوك توك</h2><div class="setting-fields">
+          <label>فتح العداد (جنيه)<input id="tuktukBaseInput" type="number" min="0" step="0.01" inputmode="decimal"></label>
+          <label>سعر الكيلومتر (جنيه)<input id="tuktukPerInput" type="number" min="0" step="0.01" inputmode="decimal"></label>
+        </div></div>
+        <div class="settings-note">الأسعار دي مؤقتة للإسكندرية فقط. رسوم الانتظار مش مفعّلة. تغييرات الأسعار مش بتأثر على أي رحلة بدأت بالفعل.</div>
+        <div class="settings-note quiet-note">التتبع بيعتمد على GPS، وبيشتغل بشكل موثوق أثناء فتح التطبيق وإضاءة الشاشة. لو التطبيق اتقفل أو GPS فقد الإشارة، جزء من المسافة ممكن ما يتحسبش.</div>
+      </div>
+      <div class="settings-actions">
+        <button id="resetPrices" class="secondary-button" type="button">استعادة الأسعار الأصلية</button>
+        <button id="savePrices" class="big-button dark-button" type="button">حفظ الأسعار</button>
+      </div>
+    </section>
+
+    <section id="historyScreen" class="screen extra-screen hidden">
+      <div class="extra-heading"><h1>سجل الرحلات</h1><p>الرحلات المحفوظة على الجهاز</p></div>
+      <div class="history-content scroll-content" id="historyContent"></div>
+      <div class="history-actions"><button id="clearHistory" class="secondary-button" type="button">مسح سجل الرحلات</button></div>
+    </section>
+  </main>
+
+  <div id="modalOverlay" class="modal-overlay hidden" role="presentation">
+    <div class="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="confirm-icon">!</div>
+      <h2 id="modalTitle"></h2><p id="modalText"></p>
+      <div class="confirm-actions"><button id="modalCancel" class="secondary-button">إلغاء</button><button id="modalConfirm" class="primary-button">تأكيد</button></div>
+    </div>
+  </div>
+
+  <div id="thanksOverlay" class="thanks-overlay hidden" aria-hidden="true">
+    <div class="thanks-backdrop"></div>
+    <div class="thanks-sheet" role="dialog" aria-modal="true" aria-label="شكراً على تقييمك">
+      <img class="thanks-sticker" src="assets/thanks.webp" alt="وجه مبتسم يشير بالإعجاب">
+      <div class="thanks-copy"><div><strong>شكراً</strong> على تقييمك</div><div>يسعدنا أن نتطور من أجلك</div></div>
+      <button id="thanksOkay" class="primary-button thanks-ok" type="button">حسناً</button>
+    </div>
+  </div>
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+  <div id="splash" class="splash">
+    <div class="brand splash-brand" aria-label="MeterGO">
+      <svg class="brand-clock" viewBox="0 0 185 150" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <g fill="none" stroke="#f5f5f5" stroke-linecap="round">
+          <path d="M81 10h26" stroke-width="7"/><path d="M94 10v12" stroke-width="6"/>
+          <path d="M130 41A62 62 0 1 0 108 143" stroke-width="8"/>
+          <path d="M39 18H70 M34 32H58 M19 45H52 M28 61H43 M9 77H43 M26 94H44 M7 109H45 M20 125H53 M35 141H88" stroke-width="2.7"/>
+          <path d="M104 87l36-39" stroke-width="6"/><circle cx="104" cy="87" r="8" fill="#f5f5f5" stroke="none"/><circle cx="104" cy="87" r="3.3" fill="#303030" stroke="none"/>
+        </g>
+        <g stroke="#f5f5f5" stroke-width="2.5" stroke-linecap="round"><path d="M94 29v7 M59 43l5 5 M43 78h7 M60 113l5-5 M94 130v-7 M128 113l-4-5 M125 45l-4 5"/></g>
+      </svg><span class="brand-words" dir="ltr">MeterGO</span>
+    </div>
+  </div>
+</div>
+<script src="app.js" defer></script>
+</body>
+</html>
