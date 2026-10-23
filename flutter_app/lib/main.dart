@@ -1,3 +1,4 @@
+import 'vehicle_selection_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(const MeterGoApp());
@@ -30,7 +31,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Future<void>.delayed(const Duration(seconds: 2), () {
       if (!mounted) return;
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute<void>(builder: (_) => const VehicleSelectionPlaceholder()),
+        MaterialPageRoute<void>(builder: (_) => const VehicleSelectionScreen()),
       );
     });
   }
